@@ -2,12 +2,14 @@ package com.example.thirdproject.config.auth;
 
 import com.example.thirdproject.model.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
+@Slf4j
 public class PrincipalDetails implements UserDetails {
 
     private User user;
@@ -22,10 +24,11 @@ public class PrincipalDetails implements UserDetails {
         collection.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
+                log.info("user.getRole() : {}", user.getRole());
                 return user.getRole();
             }
         });
-        return null;
+        return collection;
     }
 
     @Override
