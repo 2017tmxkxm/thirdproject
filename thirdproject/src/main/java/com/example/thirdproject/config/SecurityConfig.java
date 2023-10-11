@@ -1,5 +1,7 @@
 package com.example.thirdproject.config;
 
+import com.example.thirdproject.config.oauth.PrincipalOauth2UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -10,16 +12,19 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)  // Secured 어노테이션 활성화, preAuthorize 어노테이션 활성화
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfig {
+
+    @Autowired
+    private PrincipalOauth2UserService principalOauth2UserService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.authorizeHttpRequests()
                 .antMatchers("/user/**").authenticated()
-                .antMatchers("/admin/**").hasRole("ADMIN")  // ROLE_ 기본적으로 추가
-                .antMatchers("/manager/**").hasAnyRole("ADMIN, MANAGER")    // ROLE_ 기본적으로 추가, role들 중 하나라도 가지고 있으면 true 반환
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/manager/**").hasAnyRole("ADMIN, MANAGER")
                 .anyRequest().permitAll()
                 .and()
                 .formLogin()
@@ -28,7 +33,9 @@ public class SecurityConfig {
                 .defaultSuccessUrl("/")
                 .and()
                 .oauth2Login()
-                .loginPage("/loginForm");   // 구글 로그인이 완료된 뒤의 후처리가 필요하다.
+                .loginPage("/loginForm")
+                .userInfoEndpoint()
+                .userService(principalOauth2UserService);
         return http.build();
     }
 
