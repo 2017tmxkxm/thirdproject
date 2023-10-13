@@ -3,14 +3,12 @@ package com.example.thirdproject.controller;
 import com.example.thirdproject.config.auth.PrincipalDetails;
 import com.example.thirdproject.model.User;
 import com.example.thirdproject.repository.UserRepository;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
@@ -48,14 +46,15 @@ public class IndexController {
         return "OAuth 세션 정보 확인하기";
     }
 
+    @GetMapping("/user")
+    public @ResponseBody String user(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        log.info("principalDetails : {}", principalDetails.getUser());
+        return "user";
+    }
+
     @GetMapping({"", "/"})
     public String index() {
         return "index";
-    }
-
-    @GetMapping("/user")
-    public @ResponseBody String user() {
-        return "user";
     }
 
     @GetMapping("/admin")
